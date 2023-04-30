@@ -1,7 +1,9 @@
+import '../assets/css/lookupgpt.css'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import LookupGpt from './LookupGpt'
-import '../assets/css/lookupgpt.css'
 
+// Load the extension
 window.onload = async () => {
     const el = document.createElement('div')
     el.id = 'lookup-gpt'

@@ -13,6 +13,9 @@ export const fetchSessionFromOpenAI = async () => {
 
 // delete conversation by conversation id
 export const deleteConversation = async (conversationId: string) => {
+    // if conversation id is null, return
+    if (!conversationId) return
+
     // get access token
     const accessToken = (await fetchSessionFromOpenAI()).accessToken
 
@@ -35,10 +38,10 @@ export const deleteConversation = async (conversationId: string) => {
 export const processConversation = (conversation: any) => {
     const message = conversation.message
 
-    // if author is not 'assistant', return null    
+    // if author is not 'assistant', return null
     if (message.author.role !== 'assistant') return null
 
-    // if message is not text, return null  
+    // if message is not text, return null
     if (message.content.content_type !== 'text') return null
 
     // if message is empty, return null

@@ -1,5 +1,13 @@
 import { askChatGPT, deleteConversation, processConversation } from './openai'
 
+const lastRequest = {
+    tabId: 0,
+    message: {} as AskChatGptMessage,
+    requestTime: Date.now(),
+}
+
+let handleResponse = false
+
 const handleEventStreamResponse = async (
     resp: Response,
     port: chrome.runtime.Port
@@ -12,18 +20,13 @@ const handleEventStreamResponse = async (
     let conversationId = null
 
     // check body is event stream
-    if (
-        resp.body === null ||
-        resp.headers.get('content-type') !== 'text/event-stream'
-    ) {
+    if (resp.body === null || !(resp.body instanceof ReadableStream))
         return null
-    }
 
     const reader = resp.body.getReader()
-    while (true) {
+    while (handleResponse) {
         const { done, value } = await reader.read()
         buffer += decoder.decode(value)
-
         // if buffer has EOL, process data
         while (buffer.indexOf('\n\n') !== -1) {
             const data = buffer.slice(0, buffer.indexOf('\n\n'))
@@ -53,12 +56,36 @@ const handleEventStreamResponse = async (
     return conversationId
 }
 
-chrome.runtime.onConnect.addListener((port) => {
-    // check is tab connected
-    if (!port.sender?.tab) return
+chrome.runtime.onMessage.addListener(async (msg: MessageType) => {
+    switch (msg) {
+        case MessageType.StopHandle:
+            handleResponse = false
+            break
+    }
+})
 
-    console.debug('tab : ' + port.sender.tab.id + 'connected...')
-    port.onMessage.addListener(async (msg) => {
+chrome.runtime.onConnect.addListener(async (port) => {
+    // check is tab id exist
+    if (port.sender?.tab?.id === undefined) return
+
+    console.debug('tab : ' + port.sender.tab.id + ' connected...')
+
+    port.onMessage.addListener(async (msg: AskChatGptMessage) => {
+        if (
+            // check request time is less than 3 seconds
+            Date.now() - lastRequest.requestTime < 3000 &&
+            // check request is same
+            lastRequest.tabId === port.sender?.tab?.id &&
+            lastRequest.message === msg
+        ) {
+            console.debug('same request, return...')
+            return
+        }
+
+        lastRequest.message = msg
+        lastRequest.tabId = port.sender?.tab?.id || 0
+
+        handleResponse = true
         const response = await askChatGPT(msg.context, msg.target, msg.uuids)
         const conversationId = await handleEventStreamResponse(response, port)
         await deleteConversation(conversationId)

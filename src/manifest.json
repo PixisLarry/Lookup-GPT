@@ -1,4 +1,5 @@
 {
+    "manifest_version": 3,
     "name": "Lookup-GPT",
     "description": "Lookup ChatGPT for the selected text on the page.",
     "version": "1.0.0",
@@ -16,16 +17,26 @@
     },
     "content_scripts": [
         {
-            "matches": ["<all_urls>"],
-            "js": ["content-scripts/injection.tsx"],
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content-scripts/injection.tsx"
+            ],
             "run_at": "document_start"
         }
     ],
     "web_accessible_resources": [
         {
-            "matches": ["<all_urls>"],
-            "resources": ["assets/*"]
+            "matches": [
+                "<all_urls>"
+            ],
+            "resources": [
+                "assets/*"
+            ]
         }
     ],
-    "manifest_version": 3
+    "permissions": [
+        "storage"
+    ]
 }
