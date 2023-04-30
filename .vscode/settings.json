@@ -1,0 +1,13 @@
+{
+    "eslint.enable": true,
+    "eslint.options": {
+        "overrideConfigFile": ".eslintrc.json"
+    },
+    "eslint.format.enable": false,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ]
+}
