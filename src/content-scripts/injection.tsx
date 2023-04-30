@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom'
 import LookupGpt from './LookupGpt'
-import '../assets/css/content.css'
+import '../assets/css/lookupgpt.css'
 
 window.onload = async () => {
   const el = document.createElement('div');
@@ -8,5 +8,3 @@ window.onload = async () => {
   document.body.append(el)
   ReactDOM.render(<LookupGpt />, document.getElementById('lookup-gpt') as HTMLElement);
 }
-
-
