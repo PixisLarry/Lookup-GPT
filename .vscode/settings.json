@@ -1,13 +1,19 @@
 {
-    "eslint.enable": true,
-    "eslint.options": {
-        "overrideConfigFile": ".eslintrc.json"
-    },
-    "eslint.format.enable": false,
-    "eslint.validate": [
-        "javascript",
-        "javascriptreact",
-        "typescript",
-        "typescriptreact"
-    ]
+  // Lint
+  "eslint.enable": true,
+  "eslint.options": {
+    "overrideConfigFile": ".eslintrc.json"
+  },
+  "eslint.format.enable": false,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  // Formatter
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 }
