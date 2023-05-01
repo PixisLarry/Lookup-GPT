@@ -14,7 +14,7 @@ const LookupGPT = () => {
             if (port === null) {
                 port = chrome.runtime.connect({ name: 'Lookup-GPT' })
                 port.onMessage.addListener((msg) => {
-                    setGptAnswer(msg.result)
+                    setGptAnswer(msg.answer)
                 })
             }
             port.postMessage(message)
@@ -34,7 +34,7 @@ const LookupGPT = () => {
                     store.lastRequest &&
                     Date.now() - store.lastRequest < 3000
                 ) {
-                    console.debug('too fast')
+                    console.debug('Ask ChatGPT too fast')
                     return
                 }
 
