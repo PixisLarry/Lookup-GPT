@@ -10,6 +10,7 @@
     "clear": "rm -rf dist"
   },
   "dependencies": {
+    "@material-tailwind/react": "^1.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

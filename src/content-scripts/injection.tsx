@@ -1,15 +1,24 @@
 import '../assets/css/lookupgpt.css'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
+import { ThemeProvider } from '@material-tailwind/react'
 import LookupGpt from './LookupGpt'
+
+const App = () => {
+    return (
+        <React.StrictMode>
+            <ThemeProvider>
+                <LookupGpt />
+            </ThemeProvider>
+        </React.StrictMode>
+    )
+}
 
 // Load the extension
 window.onload = async () => {
-    const el = document.createElement('div')
-    el.id = 'lookup-gpt'
-    document.body.append(el)
-    ReactDOM.render(
-        <LookupGpt />,
-        document.getElementById('lookup-gpt') as HTMLElement
-    )
+    const container = document.createElement('div')
+    container.id = 'lookup-gpt'
+    document.body.append(container)
+    const root = createRoot(container)
+    root.render(<App />)
 }

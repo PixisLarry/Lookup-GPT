@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Card } from '@material-tailwind/react'
 
 let port: chrome.runtime.Port | null = null
 
@@ -86,15 +87,13 @@ const LookupGPT = () => {
     }, [])
 
     return !visiable ? null : (
-        <div
+        <Card
             ref={hoverBox}
-            className={
-                'fixed rounded-md bg-yellow-50 px-2 py-1 border border-black z-max max-w-md'
-            }
+            className="fixed px-2 py-1 border border-black z-max max-w-md"
             style={{ top: rect.bottom, left: rect.left }}
         >
             <p className="text-black">{gptAnswer}</p>
-        </div>
+        </Card>
     )
 }
 

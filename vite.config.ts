@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
             }),
         ],
         build: {
+            chunkSizeWarningLimit: 1000,
             emptyOutDir: prod,
             terserOptions: {
                 keep_classnames: !prod,
