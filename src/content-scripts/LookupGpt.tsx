@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 let port: chrome.runtime.Port | null = null
 
@@ -13,7 +13,7 @@ const LookupGPT = () => {
         const sendMessageToBackground = (message: AskChatGptMessage) => {
             if (port === null) {
                 port = chrome.runtime.connect({ name: 'Lookup-GPT' })
-                port.onMessage.addListener((msg) => {
+                port.onMessage.addListener((msg: AskChatGptResponse) => {
                     setGptAnswer(msg.answer)
                 })
             }

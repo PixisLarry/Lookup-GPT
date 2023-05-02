@@ -1,5 +1,8 @@
+import { FetchGptModelResponse, FetchSessionResponse } from '../types/openai'
+
 const sessionEndpoint = 'https://chat.openai.com/api/auth/session'
 const conversationEndpoint = 'https://chat.openai.com/backend-api/conversation'
+const fetchModelEndpoint = 'https://chat.openai.com/backend-api/models'
 
 // fetch session from opeanai (https://chat.openai.com/api/auth/session)
 const fetchSessionFromOpenAI = async () => {
@@ -8,17 +11,31 @@ const fetchSessionFromOpenAI = async () => {
     if (!response.ok)
         throw new Error(`Fetch session fail! status: ${response.status}`)
 
-    return await response.json()
+    return (await response.json()) as FetchSessionResponse
+}
+
+// fetch user can use model
+const fatchModelsFromOpenAI = async (accessToken: string) => {
+    const response = await fetch(fetchModelEndpoint, {
+        headers: {
+            'content-Type': 'application/json',
+            // access token
+            authorization: `Bearer ${accessToken}`,
+        },
+    })
+
+    if (!response.ok)
+        throw new Error(`Fetch model fail! status: ${response.status}`)
+
+    const result = (await response.json()) as FetchGptModelResponse
+    return result.models
 }
 
 // delete conversation by conversation id
-const deleteConversation = async (conversationId: string) => {
-    // if conversation id is null, return
-    if (!conversationId) return
-
-    // get access token
-    const accessToken = (await fetchSessionFromOpenAI()).accessToken
-
+const deleteConversation = async (
+    accessToken: string,
+    conversationId: string
+) => {
     console.debug('delete conversation : ', conversationId)
     const url = `${conversationEndpoint}/${conversationId}`
     const response = await fetch(url, {
@@ -75,14 +92,9 @@ const handleLoginIn = async (windowId: number, callback: () => void) => {
     })
 }
 
-export interface ChatGptAnswer {
-    conversationId: string
-    answer: string
-}
-
 const handleEventStreamResponse = async (
     resp: Response,
-    callback: (answer: ChatGptAnswer) => void
+    callback: (id: string, answer: string) => void
 ): Promise<string | null> => {
     // create a new TextDecoder to decode the response body as UTF-8
     const decoder = new TextDecoder('utf-8')
@@ -110,11 +122,7 @@ const handleEventStreamResponse = async (
                     const json = JSON.parse(data.slice(6))
                     conversationId = json.conversation_id
                     const answer = processConversation(json)
-                    if (answer)
-                        callback({
-                            conversationId: conversationId,
-                            answer: answer,
-                        })
+                    if (answer) callback(conversationId, answer)
                 } catch (error) {
                     if (data.includes('[DONE]')) {
                         console.debug('done of conversation : ', conversationId)
@@ -129,15 +137,11 @@ const handleEventStreamResponse = async (
     return conversationId
 }
 
-interface AskChatGptParams {
-    context: string
-    target: string
-    uuids: Array<string>
-}
-
 export const askChatGPT = async (
-    { context, target, uuids }: AskChatGptParams,
-    callback: (answer: ChatGptAnswer) => void
+    uuids: string[],
+    context: string,
+    target: string,
+    callback: (id: string, answer: string) => void
 ) => {
     const createChatGptPrompt = (
         target: string,
@@ -162,7 +166,11 @@ Restriction:
 `
     }
 
-    const createMessage = (prompt: string, uuids: Array<string>) => {
+    const createMessage = (
+        model: string,
+        prompt: string,
+        uuids: Array<string>
+    ) => {
         return {
             action: 'next',
             messages: [
@@ -178,7 +186,7 @@ Restriction:
                 },
             ],
             parent_message_id: uuids[1],
-            model: 'text-davinci-002-render-sha',
+            model: model,
             // "timezone_offset_min": -480,
             // "variant_purpose": "none",
             // "history_and_training_disabled": false
@@ -200,12 +208,20 @@ Restriction:
         if (tab.id)
             handleLoginIn(tab.id, () => {
                 // after login, call askChatGPT again
-                askChatGPT({ context, target, uuids }, callback)
+                askChatGPT(uuids, context, target, callback)
             })
         throw new Error('OpenAI session expired!')
     }
 
-    const message = createMessage(createChatGptPrompt(target, context), uuids)
+    // check what model can use
+    const models = await fatchModelsFromOpenAI(accessToken)
+    if (models.length === 0) throw new Error('No model can use!')
+
+    const message = createMessage(
+        models[0].slug,
+        createChatGptPrompt(target, context),
+        uuids
+    )
 
     // send POST request to conversation endpoint
     const response = await fetch(conversationEndpoint, {
@@ -226,5 +242,5 @@ Restriction:
     const conversation_id = await handleEventStreamResponse(response, callback)
 
     // clear conversation
-    if (conversation_id) await deleteConversation(conversation_id)
+    if (conversation_id) await deleteConversation(accessToken, conversation_id)
 }
