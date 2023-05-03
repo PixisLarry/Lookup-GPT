@@ -1,10 +1,21 @@
+import '../assets/css/popup.css'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
+import { ThemeProvider } from '@material-tailwind/react'
 import Setting from './Setting'
 
-ReactDOM.render(
-    <React.StrictMode>
-        <Setting />
-    </React.StrictMode>,
-    document.getElementById('Setting')
-)
+const App = () => {
+    return (
+        <React.StrictMode>
+            <ThemeProvider>
+                <Setting />
+            </ThemeProvider>
+        </React.StrictMode>
+    )
+}
+
+const container = document.getElementById('Setting')
+if (container) {
+    const root = createRoot(container)
+    root.render(<App />)
+}

@@ -11,11 +11,24 @@ chrome.runtime.onConnect.addListener(async (port) => {
     console.debug('tab : ' + port.sender.tab.id + ' connected...')
 
     port.onMessage.addListener(async (msg: AskChatGptMessage) => {
-        await askChatGPT(msg.uuids, msg.context, msg.target, (id, answer) => {
-            port.postMessage({
-                conversationId: id,
-                answer: answer,
-            } as AskChatGptResponse)
-        })
+        const store = await chrome.storage.local.get(['lang'])
+        await askChatGPT(
+            msg.uuids,
+            msg.context,
+            msg.target,
+            store.lang,
+            (id, answer) => {
+                port.postMessage({
+                    conversationId: id,
+                    answer: answer,
+                } as AskChatGptResponse)
+            }
+        )
     })
+})
+
+chrome.runtime.onInstalled.addListener(() => {
+    let uiLang = chrome.i18n.getUILanguage()
+    uiLang = uiLang.replaceAll('-', '_')
+    chrome.storage.local.set({ lang: uiLang })
 })

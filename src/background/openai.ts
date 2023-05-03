@@ -141,12 +141,13 @@ export const askChatGPT = async (
     uuids: string[],
     context: string,
     target: string,
+    lang: string,
     callback: (id: string, answer: string) => void
 ) => {
     const createChatGptPrompt = (
         target: string,
         context: string,
-        lang = 'zh-TW'
+        lang = 'en_US'
     ) => {
         return `
 Context:
@@ -208,7 +209,7 @@ Restriction:
         if (tab.id)
             handleLoginIn(tab.id, () => {
                 // after login, call askChatGPT again
-                askChatGPT(uuids, context, target, callback)
+                askChatGPT(uuids, context, target, lang, callback)
             })
         throw new Error('OpenAI session expired!')
     }
@@ -219,7 +220,7 @@ Restriction:
 
     const message = createMessage(
         models[0].slug,
-        createChatGptPrompt(target, context),
+        createChatGptPrompt(target, context, lang),
         uuids
     )
 
