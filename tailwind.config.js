@@ -11,6 +11,8 @@ module.exports = withMT({
       'max': '2147483647',
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 })
 

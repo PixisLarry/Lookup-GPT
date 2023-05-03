@@ -150,20 +150,17 @@ export const askChatGPT = async (
         lang = 'en_US'
     ) => {
         return `
-Context:
-- ${context}
-
-Explain:
-- ${target}
-
-Response lang:
-- ${lang}
-
+Please explain what is
+${target}
+in
+${context}
+        
 Restriction:
 - Your role is a dictionary or a WIKI.
-- Answer in 'lang' value.
+- Answer in '${lang}' language.
 - Don't ask any questions.
-- If you found the "Explain" value in "Context" has more meaning, (eg. 'hand' in 'Give me a hand'), please explain it.
+- If you found the there has more meaning in context, (eg. 'hand' in 'Give me a hand'), please explain it.
+- Just output your result.
 `
     }
 
