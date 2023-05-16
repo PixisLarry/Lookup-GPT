@@ -8,7 +8,9 @@ const App = () => {
     return (
         <React.StrictMode>
             <ThemeProvider>
-                <Setting />
+                <div className='lookup-gpt'>
+                    <Setting />
+                </div>
             </ThemeProvider>
         </React.StrictMode>
     )

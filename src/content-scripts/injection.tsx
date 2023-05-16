@@ -18,6 +18,7 @@ const App = () => {
 window.onload = async () => {
     const container = document.createElement('div')
     container.id = 'lookup-gpt'
+    container.className = 'lookup-gpt'
     document.body.append(container)
     const root = createRoot(container)
     root.render(<App />)
