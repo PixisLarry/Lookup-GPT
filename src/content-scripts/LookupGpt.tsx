@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { Card } from '@material-tailwind/react'
 import ReactMarkdown from 'react-markdown'
 
 let port: chrome.runtime.Port | null = null
@@ -98,15 +97,18 @@ const LookupGPT = () => {
     }, [])
 
     return !visiable ? null : (
-        <Card
+        <div
             ref={hoverBox}
-            className="fixed px-2 py-1 border border-black z-max max-w-md"
+            className="fixed block px-2 py-1 z-max max-w-md
+                     bg-white border 
+                     border-gray-200 rounded-lg shadow
+                       text-left"
             style={{ top: rect.bottom, left: rect.left }}
         >
             <div className="prose">
                 <ReactMarkdown>{gptAnswer}</ReactMarkdown>
             </div>
-        </Card>
+        </div>
     )
 }
 
