@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
 
 let port: chrome.runtime.Port | null = null
+import { SelectionBar } from './Selection/SelectionBar'
+import uuid from 'react-uuid'
 
 const LookupGPT = () => {
     const hoverBox = useRef(null)
@@ -47,7 +48,7 @@ const LookupGPT = () => {
 
         // use window.crypto create 3 UUIDs
         const uuids = []
-        for (let i = 0; i < 3; i++) uuids.push(window.crypto.randomUUID())
+        for (let i = 0; i < 3; i++) uuids.push(uuid())
 
         const message: AskChatGptMessage = {
             target: target,
@@ -85,31 +86,19 @@ const LookupGPT = () => {
         // hide hover box when click outside
         document.addEventListener('click', (event) => {
             if (
-                hoverBox.current &&
-                !(hoverBox.current as HTMLElement).contains(
-                    event.target as HTMLElement
+                !(
+                    hoverBox.current &&
+                    (hoverBox.current as HTMLElement) ==
+                        (event.target as HTMLElement)
                 )
             ) {
                 // chrome.runtime.sendMessage(MessageType.StopHandle)
+                setGptAnswer('')
                 setVisiable(false)
             }
         })
     }, [])
 
-    return !visiable ? null : (
-        <div
-            ref={hoverBox}
-            className="fixed block px-2 py-1 z-max max-w-md
-                     bg-white border 
-                     border-gray-200 rounded-lg shadow
-                       text-left"
-            style={{ top: rect.bottom, left: rect.left }}
-        >
-            <div className="prose">
-                <ReactMarkdown>{gptAnswer}</ReactMarkdown>
-            </div>
-        </div>
-    )
+    return <SelectionBar gptAnswer={gptAnswer} visiable={visiable} />
 }
-
 export default LookupGPT
