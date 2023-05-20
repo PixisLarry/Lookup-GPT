@@ -95,9 +95,10 @@ const LookupGPT = () => {
         document.addEventListener('click', (event) => {
             if (
                 !(
-                    hoverBox.current &&
-                    (hoverBox.current as HTMLElement) ==
-                        (event.target as HTMLElement)
+                    (
+                        event.target as HTMLElement
+                    ).parentElement?.parentElement?.getAttribute('id') ==
+                    'lookup-gpt'
                 )
             ) {
                 // chrome.runtime.sendMessage(MessageType.StopHandle)
