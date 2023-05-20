@@ -62,6 +62,14 @@ const LookupGPT = () => {
         sendMessageToBackground(message)
     }
 
+    const addListener = () => {
+        chrome.runtime.onMessage.addListener(function (request) {
+            if (request.action === 'contextMenu-gpt-search-selection') {
+                handleAskChatGPT()
+            }
+        })
+    }
+
     useEffect(() => {
         // listen keyboard event : alt + l
         document.addEventListener('keydown', async (event) => {
@@ -97,6 +105,8 @@ const LookupGPT = () => {
                 setVisiable(false)
             }
         })
+
+        addListener()
     }, [])
 
     return <SelectionBar gptAnswer={gptAnswer} visiable={visiable} />

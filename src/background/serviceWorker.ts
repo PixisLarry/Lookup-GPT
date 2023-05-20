@@ -1,3 +1,4 @@
+import { createContextMenu } from './createContextMenus'
 import { askChatGPT } from './openai'
 
 chrome.runtime.onMessage.addListener(async (msg: MessageType) => {
@@ -32,3 +33,5 @@ chrome.runtime.onInstalled.addListener(() => {
     uiLang = uiLang.replaceAll('-', '_')
     chrome.storage.local.set({ lang: uiLang })
 })
+
+createContextMenu()

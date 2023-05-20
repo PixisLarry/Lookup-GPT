@@ -30,5 +30,5 @@
             "resources": ["assets/*"]
         }
     ],
-    "permissions": ["storage"]
+    "permissions": ["storage", "contextMenus"]
 }
